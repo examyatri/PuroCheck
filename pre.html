@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Pre-Order | PuroCheck® Premium Mustard Oil</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        :root {
+            --amzn-navy: #131921;
+            --amzn-blue: #232f3e;
+            --amzn-orange: #FF9900;
+            --amzn-text: #0F1111;
+            --amzn-gray: #565959;
+            --amzn-link: #007185;
+            --warning-red: #B12704;
+            --success-green: #067D62;
+            --amzn-bg: #EAEDED;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--amzn-bg); 
+            color: var(--amzn-text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .bebas { font-family: 'Bebas Neue', cursive; }
+
+        .amazon-card {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            padding: clamp(16px, 3vw, 24px);
+            margin-bottom: 12px;
+        }
+
+        .btn-amazon-buy {
+            background: #FFA41C;
+            border-radius: 8px;
+            border: 1px solid #FF8F00;
+            color: #0F1111;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 14px 10px;
+            width: 100%;
+            text-align: center;
+            text-transform: uppercase;
+            box-shadow: 0 4px 14px 0 rgba(255,164,28,0.39);
+            letter-spacing: 0.05em;
+            transition: all 0.2s;
+        }
+        .btn-amazon-buy:active { transform: scale(0.98); background: #f3961c; }
+
+        .input-amazon {
+            border: 2px solid #slate-100;
+            border-radius: 12px;
+            padding: 14px;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s;
+            background: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+        .input-amazon:focus { border-color: #FF9900; }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const Navbar = () => (
+            <nav className="fixed top-0 left-0 right-0 z-[100] bg-[#131921] h-14 flex items-center px-4 shadow-lg">
+                <div className="max-w-5xl mx-auto w-full flex justify-between items-center">
+                    <a href="index.html" className="bebas text-2xl tracking-wide text-white flex items-center gap-2">
+                        <span className="text-xl">←</span> PURO<span className="text-[#FF9900]">CHECK</span>
+                    </a>
+                    <div className="text-white text-[10px] font-black uppercase tracking-widest">Pre-Order Portal</div>
+                </div>
+            </nav>
+        );
+
+        const OrderForm = () => {
+            const [loading, setLoading] = useState(false);
+            const [submitted, setSubmitted] = useState(false);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+
+                const payload = {
+                    authKey: "PURO_SECRET_786",
+                    name: document.getElementById('name')?.value || "",
+                    mobile: document.getElementById('mobile')?.value || "",
+                    city: document.getElementById('city')?.value || "",
+                    address: document.getElementById('address')?.value || "",
+                    quantity: "1",
+                    type: window.location.pathname.includes('pre') ? 'Pre-Order' : 'Direct Order'
+                };
+
+                const scriptURL = "https://script.google.com/macros/s/AKfycbyj7-C6zoqaLFzWMnSxsGWkVBrEy3Axempu93_T8fsZo8ebHA-QGN3GHy5iYHnG5DwB/exec";
+
+                try {
+                    await fetch(scriptURL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: JSON.stringify(payload)
+                    });
+
+                    alert("Details saved successfully!");
+                    setSubmitted(true);
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert("Something went wrong!");
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div className="mt-10 pt-10 border-t border-gray-100">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-1.5 h-6 bg-[#FF9900] rounded-full"></div>
+                        <h3 className="text-xl font-extrabold tracking-tight">Pre-Order Reservation Form</h3>
+                    </div>
+
+                    {submitted ? (
+                        <div className="bg-green-50 border-2 border-green-200 p-8 rounded-3xl text-center shadow-sm">
+                            <span className="text-4xl mb-4 block">📦 ✅</span>
+                            <h4 className="text-xl font-black text-green-900 mb-2">Pre-Order Success!</h4>
+                            <p className="text-green-700 font-bold text-sm">Thank you for trusting PuroCheck®. We have reserved your bottle. Our team will contact you via WhatsApp shortly for confirmation.</p>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-400 mb-1.5 tracking-widest uppercase">Full Name</label>
+                                <input id="name" required type="text" className="w-full bg-white border-2 border-slate-100 rounded-xl px-4 py-3.5 text-sm font-bold focus:border-orange-500 outline-none transition-all" placeholder="Enter name" />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-400 mb-1.5 tracking-widest uppercase">Mobile Number</label>
+                                <input id="mobile" required type="tel" maxLength="10" className="w-full bg-white border-2 border-slate-100 rounded-xl px-4 py-3.5 text-sm font-bold focus:border-orange-500 outline-none transition-all" placeholder="Enter 10 digit number" />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-400 mb-1.5 tracking-widest uppercase">City</label>
+                                <input id="city" required type="text" className="w-full bg-white border-2 border-slate-100 rounded-xl px-4 py-3.5 text-sm font-bold focus:border-orange-500 outline-none transition-all" placeholder="Enter city" />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-400 mb-1.5 tracking-widest uppercase">Full Address</label>
+                                <textarea id="address" required className="w-full bg-white border-2 border-slate-100 rounded-xl px-4 py-3.5 text-sm font-bold focus:border-orange-500 outline-none transition-all h-24" placeholder="Enter delivery address"></textarea>
+                            </div>
+
+                            <button 
+                                type="submit" 
+                                disabled={loading}
+                                className={`w-full ${loading ? 'bg-gray-400' : 'bg-[#FF9900]'} py-4 rounded-xl font-black text-white text-sm tracking-widest shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2`}
+                            >
+                                {loading ? 'SAVING...' : 'SECURE MY PRE-ORDER NOW'}
+                            </button>
+                            <p className="text-[10px] text-gray-400 text-center mt-4 font-bold tracking-widest uppercase">No payment required today. Pay on delivery.</p>
+                        </form>
+                    )}
+                </div>
+            );
+        };
+
+        const App = () => {
+            return (
+                <div className="min-h-screen">
+                    <Navbar />
+                    <main className="max-w-4xl mx-auto pt-20 px-4 md:px-8 pb-20">
+                        
+                        <div className="amazon-card p-6 md:p-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                <div className="flex flex-col items-center">
+                                    <div className="w-full bg-slate-50 rounded-3xl p-6 border border-slate-100 flex items-center justify-center relative overflow-hidden group">
+                                        <div className="absolute top-4 left-4 bg-[#B12704] text-white text-[10px] font-black px-3 py-1 rounded-full z-10 shadow-lg tracking-widest">EXCLUSIVE</div>
+                                        <img 
+                                            src="https://i.postimg.cc/L81hvYjz/1770818536194.png" 
+                                            alt="Premium Mustard Oil" 
+                                            className="w-full max-w-[280px] object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-[var(--amzn-link)] text-[12px] font-bold hover:underline cursor-pointer">PuroCheck® Official Store</span>
+                                        <div className="flex text-[#FFA41C] text-xs">★★★★★</div>
+                                    </div>
+                                    
+                                    <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                                        PuroCheck Premium Wood Pressed Mustard Oil (1 Litre)
+                                    </h1>
+
+                                    <div className="bg-orange-50/50 p-4 rounded-2xl border border-orange-100 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-[10px] font-black text-orange-600 tracking-widest uppercase mb-1">Pre-Order Special</p>
+                                            <div className="flex items-baseline gap-2">
+                                                <span className="text-3xl font-black text-gray-900 tracking-tighter">₹399</span>
+                                                <span className="text-sm text-gray-400 line-through font-bold">₹499.00</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[11px] font-black text-green-700 tracking-tight uppercase">Free Delivery</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <OrderForm />
+                        </div>
+                    </main>
+
+                    <footer className="bg-[#131921] py-12 px-6 text-center text-gray-500 text-[10px] font-black tracking-widest uppercase border-t border-white/5">
+                        <div className="max-w-xl mx-auto space-y-4">
+                            <p className="text-white">PUROCHECK® INDIA</p>
+                            <p>© 2024 Secure Pre-Order Environment • Shuddh ka Sabut</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

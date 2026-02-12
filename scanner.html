@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Instant QR Redirect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        #video-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            background: radial-gradient(circle, transparent 35%, rgba(0,0,0,0.6) 100%);
+        }
+
+        .reticle {
+            width: 280px;
+            height: 280px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 48px;
+            position: relative;
+        }
+
+        .reticle::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 80%;
+            height: 4px;
+            background: #00ff88;
+            box-shadow: 0 0 25px #00ff88, 0 0 10px #00ff88;
+            border-radius: 10px;
+            animation: scanLine 2s linear infinite;
+        }
+
+        @keyframes scanLine {
+            0% { top: 10%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 90%; opacity: 0; }
+        }
+
+        .corner {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 6px solid #00ff88;
+            filter: drop-shadow(0 0 5px #00ff88);
+        }
+        .tl { top: -4px; left: -4px; border-right: 0; border-bottom: 0; border-radius: 48px 0 0 0; }
+        .tr { top: -4px; right: -4px; border-left: 0; border-bottom: 0; border-radius: 0 48px 0 0; }
+        .bl { bottom: -4px; left: -4px; border-right: 0; border-top: 0; border-radius: 0 0 0 48px; }
+        .br { bottom: -4px; right: -4px; border-left: 0; border-top: 0; border-radius: 0 0 48px 0; }
+
+        #status {
+            position: fixed;
+            bottom: 12%;
+            width: 100%;
+            text-align: center;
+            color: #00ff88;
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            z-index: 20;
+            text-shadow: 0 0 10px rgba(0,255,136,0.5);
+        }
+        
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <video id="video-preview" playsinline></video>
+    
+    <div id="status">SCANNING AUTOMATICALLY</div>
+
+    <div class="overlay">
+        <div class="reticle" id="reticle">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+        </div>
+    </div>
+
+    <div id="loading-overlay">
+        <div class="w-16 h-16 border-4 border-[#00ff88] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <div class="text-[#00ff88] font-bold tracking-widest text-xs">OPENING LINK...</div>
+    </div>
+
+    <canvas id="hidden-canvas" style="display:none;"></canvas>
+
+    <script>
+        const video = document.getElementById('video-preview');
+        const canvas = document.getElementById('hidden-canvas');
+        const context = canvas.getContext('2d', { willReadFrequently: true });
+        const statusText = document.getElementById('status');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const reticle = document.getElementById('reticle');
+
+        let isScanning = true;
+
+        async function init() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment', 
+                        width: { ideal: 1920 }, 
+                        height: { ideal: 1080 } 
+                    } 
+                });
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    video.play();
+                    requestAnimationFrame(tick);
+                };
+            } catch (e) {
+                statusText.textContent = "CAMERA ACCESS REQUIRED";
+                statusText.style.color = "#ff4444";
+            }
+        }
+
+        function tick() {
+            if (!isScanning) return;
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
+                });
+
+                if (code && code.data) {
+                    onDetected(code.data);
+                    return;
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+
+        function onDetected(url) {
+            isScanning = false;
+            
+            // Format URL instantly
+            let target = url.trim();
+            if (!/^https?:\/\//i.test(target)) {
+                target = (target.includes('.') && !target.includes(' ')) ? 'https://' + target : 'https://www.google.com/search?q=' + encodeURIComponent(target);
+            }
+
+            // High-speed visual feedback
+            reticle.style.borderColor = "#00ff88";
+            reticle.style.boxShadow = "0 0 100px rgba(0,255,136,0.6)";
+            loadingOverlay.style.display = 'flex';
+            statusText.textContent = "LINK FOUND";
+
+            // Attempt to open in new tab
+            const win = window.open(target, '_blank');
+            
+            // Immediate fallback to current tab if popup is blocked or environment restricts new tabs
+            // This ensures the link is opened WITHOUT any user interaction or "Asking"
+            if (!win || win.closed || typeof win.closed === 'undefined') {
+                window.location.replace(target);
+            } else {
+                // If the new tab succeeded, we reset for the next scan after a delay
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                    isScanning = true;
+                    reticle.style.borderColor = "";
+                    reticle.style.boxShadow = "";
+                    statusText.textContent = "SCANNING AUTOMATICALLY";
+                    requestAnimationFrame(tick);
+                }, 1500);
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
