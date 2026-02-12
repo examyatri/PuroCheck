@@ -441,25 +441,25 @@
                 <div className="flex flex-col items-center text-center px-6 min-h-[160px]">
                     <div className="flex gap-1.5 text-[#FFA41C] text-sm mb-4">★★★★★</div>
                     <p className="text-[17px] font-extrabold mb-2 text-slate-800">"⭐ Review 1 – Home Cook"</p>
-                    <p className="text-[14px] text-slate-600 font-medium leading-relaxed italic">“I cook daily for my family and taste matters a lot to me. This mustard oil has a very clean aroma — no burning smell, no heaviness. After scanning the QR code, I felt confident about what I was using.”</p>
+                    <p className="text-[14px] text-slate-600 font-medium leading-relaxed italic">“I cook daily for my family and taste matters a lot to me. This mustard oil has a very clean aroma — no burning smell, no heaviness. After scanning the QR code, I felt confident about what I was using. It feels honest.”</p>
                     <p className="text-[11px] mt-6 font-bold text-slate-400 tracking-widest uppercase">— Ramesh Verma</p>
                 </div>,
                 <div className="flex flex-col items-center text-center px-6 min-h-[160px]">
                     <div className="flex gap-1.5 text-[#FFA41C] text-sm mb-4">★★★★★</div>
                     <p className="text-[17px] font-extrabold mb-2 text-slate-800">"⭐ Review 2 – Health-conscious Buyer"</p>
-                    <p className="text-[14px] text-slate-600 font-medium leading-relaxed italic">“I stopped trusting edible oil brands long ago. What I liked here is the transparency. The QR code actually shows details instead of just marketing words.”</p>
+                    <p className="text-[14px] text-slate-600 font-medium leading-relaxed italic">“I stopped trusting edible oil brands long ago. What I liked here is the transparency. The QR code actually shows details instead of just marketing words. The oil feels light and digestion is better.”</p>
                     <p className="text-[11px] mt-6 font-bold text-slate-400 tracking-widest uppercase">— Neha Singh</p>
                 </div>,
                 <div className="flex flex-col items-center text-center px-6 min-h-[160px]">
                     <div className="flex gap-1.5 text-[#FFA41C] text-sm mb-4">★★★★★</div>
                     <p className="text-[17px] font-extrabold mb-2 text-slate-800">"⭐ Review 3 – Traditional Taste Lover"</p>
-                    <p className="text-[14px] text-slate-600 font-medium leading-relaxed italic">“This oil reminds me of the sarson tel we used in villages. Strong but pure flavour. Not refined, not artificial. I liked that the brand doesn’t overpromise.”</p>
+                    <p className="text-[14px] text-slate-600 font-medium leading-relaxed italic">“This oil reminds me of the sarson tel we used in villages. Strong but pure flavour. Not refined, not artificial. I liked that the brand doesn’t overpromise — it just shows proof.”</p>
                     <p className="text-[11px] mt-6 font-bold text-slate-400 tracking-widest uppercase">— Sunil Yadav</p>
                 </div>,
                 <div className="flex flex-col items-center text-center px-6 min-h-[160px]">
                     <div className="flex gap-1.5 text-[#FFA41C] text-sm mb-4">★★★★★</div>
                     <p className="text-[17px] font-extrabold mb-2 text-slate-800">"⭐ Review 4 – First-time Buyer"</p>
-                    <p className="text-[14px] text-slate-600 font-medium leading-relaxed italic">“I was unsure before buying, but the QR code convinced me. Everything was clearly explained. The packaging is simple, and the oil quality feels premium.”</p>
+                    <p className="text-[14px] text-slate-600 font-medium leading-relaxed italic">“I was unsure before buying, but the QR code convinced me. Everything was clearly explained. The packaging is simple, and the oil quality feels premium. I will repurchase.”</p>
                     <p className="text-[11px] mt-6 font-bold text-slate-400 tracking-widest uppercase">— Pooja Mishra</p>
                 </div>,
                 <div className="flex flex-col items-center text-center px-6 min-h-[160px]">
@@ -529,14 +529,6 @@
 
             return (
                 <div className="antialiased pb-40">
-                    {/* SEO Hidden Keywords: Improves ranking for major search terms */}
-                    <div className="sr-only" aria-hidden="true">
-                        <h1>Mustard oil brand India - Best Kachi Ghani Mustard Oil</h1>
-                        <p>Keywords: mustard oil, premium mustard oil, Kachi Ghani mustard oil, cold press mustard oil, wood pressed mustard oil, pure sarson tel, sarson ka tel brand, best cooking oil for heart, traditional ghani oil, pure mustard oil online.</p>
-                        <h2>PuroCheck: India's Premium Cold Pressed Mustard Oil</h2>
-                        <p>Buy premium mustard oil extracted through traditional cold press method. No chemicals, hexane free, high pungency, and vitamin rich. Perfect for hair, massage, and cooking.</p>
-                    </div>
-
                     <nav className="fixed top-0 left-0 right-0 z-[100] bg-[#131921] h-14 flex items-center px-4 shadow-lg">
                         <div className="max-w-xl mx-auto w-full flex justify-between items-center">
                             <span className="bebas text-2xl tracking-wide text-white flex items-center gap-1.5">
@@ -765,9 +757,11 @@
                             </div>
                             <Scroller id="transparency-scroller" items={transparencySlides} autoPlayInterval={6000} dotActiveClass="bg-[#FF9900]" />
                             <div className="px-6 pb-6 mt-4">
-                                <button style={{ backgroundColor: '#D4AF37', color: '#000000' }} className="!py-4 w-full shadow-[0_4px_15px_rgba(212,175,55,0.4)] text-[14px] tracking-widest font-black uppercase flex items-center justify-center gap-3 rounded-lg border border-[#B8860B] active:scale-[0.98] transition-all">
-                                    <span aria-hidden="true">📷</span> SCAN PUROCHECK OIL QR
-                                </button>
+                                <a href="scanner.html" className="block w-full">
+                                    <button style={{ backgroundColor: '#D4AF37', color: '#000000' }} className="!py-4 w-full shadow-[0_4px_15px_rgba(212,175,55,0.4)] text-[14px] tracking-widest font-black uppercase flex items-center justify-center gap-3 rounded-lg border border-[#B8860B] active:scale-[0.98] transition-all">
+                                        <span aria-hidden="true">📷</span> SCAN PUROCHECK OIL QR
+                                    </button>
+                                </a>
                             </div>
                         </div>
 
